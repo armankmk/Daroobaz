@@ -7,58 +7,271 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background: radial-gradient(circle at center, #1e293b, #0f172a); color: #f8fafc; overflow: hidden; touch-action: none; }
-        .glass-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .prescription-paper { background: #ffffff; color: #1e293b; border-radius: 4px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); touch-action: none; user-select: none; transition: transform 0.1s ease-out; }
-        .swipe-correct { border-right: 12px solid #22c55e !important; }
-        .swipe-wrong { border-left: 12px solid #ef4444 !important; }
-        .penalty-flash { animation: pulse-red 0.5s ease-out; }
-        @keyframes pulse-red { 0% { background-color: rgba(239, 68, 68, 0); } 50% { background-color: rgba(239, 68, 68, 0.2); } 100% { background-color: rgba(239, 68, 68, 0); } }
+        :root {
+            --green-primary: #22c55e;
+            --green-glow:    rgba(34, 197, 94, 0.35);
+            --green-dim:     rgba(34, 197, 94, 0.12);
+            --bg-dark:       #050f07;
+            --bg-mid:        #0a1a0c;
+            --glass-bg:      rgba(5, 20, 8, 0.75);
+            --glass-border:  rgba(34, 197, 94, 0.18);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: radial-gradient(ellipse at 40% 20%, #0a2010 0%, #050f07 60%, #000 100%);
+            color: #e2ffe8;
+            overflow: hidden;
+            touch-action: none;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Animated background dots */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: radial-gradient(circle, rgba(34,197,94,0.06) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 0 30px rgba(34,197,94,0.06), inset 0 1px 0 rgba(34,197,94,0.1);
+        }
+
+        .prescription-paper {
+            background: #f8fdf9;
+            color: #0d1a0f;
+            border-radius: 6px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(34,197,94,0.15);
+            touch-action: none;
+            user-select: none;
+            transition: transform 0.08s ease-out;
+        }
+        .swipe-correct { border-right: 10px solid #22c55e !important; box-shadow: 0 20px 50px rgba(34,197,94,0.25) !important; }
+        .swipe-wrong   { border-left:  10px solid #ef4444 !important; box-shadow: 0 20px 50px rgba(239,68,68,0.25) !important; }
+
+        @keyframes pulse-red  { 0%,100% { background: transparent; } 50% { background: rgba(239,68,68,0.15); } }
+        @keyframes glow-in    { from { opacity:0; transform:scale(0.92) translateY(8px); } to { opacity:1; transform:scale(1) translateY(0); } }
+        @keyframes float      { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-4px); } }
+
+        .logo-wrap {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .support-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: #f0fdf4;
+            font-weight: 800;
+            padding: 13px 26px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-size: 0.88rem;
+            box-shadow: 0 4px 18px rgba(34,197,94,0.35), 0 0 0 1px rgba(134,239,172,0.2) inset;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .support-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 24px rgba(34,197,94,0.5); background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .support-btn:active { transform: scale(0.95); }
+        .support-btn .btn-icon { font-size: 1.15rem; }
+
+        .start-btn {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #052008;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+            box-shadow: 0 4px 20px rgba(34,197,94,0.45);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .start-btn:hover  { box-shadow: 0 6px 28px rgba(34,197,94,0.6); transform: translateY(-1px); }
+        .start-btn:active { transform: scale(0.97); }
+
+        .name-input {
+            background: rgba(5, 20, 8, 0.6);
+            border: 1px solid rgba(34,197,94,0.25);
+            color: #e2ffe8;
+            caret-color: #22c55e;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .name-input:focus {
+            border-color: rgba(34,197,94,0.6);
+            box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
+            outline: none;
+        }
+        .name-input::placeholder { color: rgba(134,239,172,0.35); }
+
+        .timer-val  { color: #4ade80; text-shadow: 0 0 12px rgba(74,222,128,0.5); }
+        .round-val  { color: #86efac; }
+        .feedback   { color: rgba(134,239,172,0.7); }
+
+        .hint-bar { color: rgba(74,222,128,0.35); }
+
+        .score-big { color: #4ade80; text-shadow: 0 0 24px rgba(74,222,128,0.5); }
+
+        /* Rx watermark on prescription */
+        .rx-watermark {
+            position: absolute;
+            bottom: 6px;
+            right: 12px;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: rgba(34,197,94,0.07);
+            line-height: 1;
+            pointer-events: none;
+            font-style: italic;
+        }
     </style>
 </head>
-<body class="h-screen w-full flex items-center justify-center p-4">
+<body class="flex items-center justify-center p-4">
 
     <!-- Screen Start -->
-    <div id="screen-start" class="w-full max-w-sm glass-card rounded-3xl p-8 text-center z-50">
-        <h1 class="text-4xl font-black mb-2 text-blue-400">داروباز</h1>
-        <p class="text-slate-400 text-sm mb-8">BighamLab Edition v1.0</p>
-        <input type="text" id="player-name" placeholder="نام دکتر؟" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6 text-center focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-        <button onclick="Game.start()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all active:scale-95">شروع شیفت کاری</button>
-        <a href="https://zarinp.al/bighamlab" target="_blank" class="mt-6 block text-yellow-500 text-sm hover:underline">☕ حمایت از BighamLab</a>
+    <div id="screen-start" class="w-full max-w-sm glass-card rounded-3xl p-8 text-center relative z-10" style="animation: glow-in 0.4s ease both;">
+        
+        <!-- Logo -->
+        <div class="logo-wrap flex justify-center mb-5">
+            <img src="data:image/png;base64,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" alt="BighamLab" class="w-24 h-24 rounded-2xl" style="image-rendering: crisp-edges;">
+        </div>
+
+        <h1 class="text-4xl font-black mb-1" style="color:#4ade80; text-shadow: 0 0 20px rgba(74,222,128,0.4);">داروباز</h1>
+        <p class="text-sm mb-8" style="color:rgba(134,239,172,0.5);">BighamLab Edition v1.0</p>
+
+        <div class="mb-3 text-right pr-1" style="color:rgba(134,239,172,0.6); font-size:0.8rem;">فامیلی شریفتون؟</div>
+        <input type="text" id="player-name" placeholder="نام دکتر..."
+               class="name-input w-full rounded-xl p-4 mb-5 text-center text-base">
+        
+        <button onclick="Game.start()" class="start-btn w-full py-4 rounded-xl w-full">
+            شروع شیفت کاری
+        </button>
+
+        <div class="mt-5 flex justify-center">
+            <a href="https://reymit.ir/bighamlab" target="_blank" class="support-btn">
+                <span class="btn-icon">☕</span>
+                <span>حمایت از BighamLab</span>
+            </a>
+        </div>
     </div>
 
     <!-- Screen Play -->
-    <div id="screen-play" class="hidden w-full max-w-sm h-full flex flex-col pt-8">
-        <div class="flex justify-between items-center mb-6 glass-card p-4 rounded-2xl">
-            <div><span class="text-xs text-slate-400 block">زمان</span><span id="timer" class="text-xl font-mono text-yellow-400">06:00</span></div>
-            <div id="feedback-text" class="text-sm italic text-slate-400 truncate max-w-[150px]">آماده‌باش دکتر!</div>
-            <div><span class="text-xs text-slate-400 block">مرحله</span><span id="round-count" class="text-xl font-bold text-blue-400">1/10</span></div>
+    <div id="screen-play" class="hidden w-full max-w-sm h-full flex flex-col pt-6 relative z-10">
+        <div class="flex justify-between items-center mb-5 glass-card p-4 rounded-2xl">
+            <div>
+                <span class="text-xs block" style="color:rgba(134,239,172,0.5);">زمان</span>
+                <span id="timer" class="text-xl font-mono timer-val">06:00</span>
+            </div>
+            <div id="feedback-text" class="text-sm italic feedback truncate max-w-[150px] text-center">آماده‌باش دکتر!</div>
+            <div>
+                <span class="text-xs block" style="color:rgba(134,239,172,0.5);">مرحله</span>
+                <span id="round-count" class="text-xl font-bold round-val">1/10</span>
+            </div>
         </div>
         <div id="card-container" class="relative flex-grow flex items-center justify-center"></div>
-        <div class="flex justify-between px-4 py-8 opacity-50 text-sm"><span>← تداخل</span><span>تایید →</span></div>
+        <div class="flex justify-between px-4 py-6 hint-bar text-sm">
+            <span>← تداخل</span><span>تایید →</span>
+        </div>
     </div>
 
     <!-- Screen Result -->
-    <div id="screen-result" class="hidden w-full max-w-sm glass-card rounded-3xl p-8 text-center">
-        <h2 class="text-2xl font-bold mb-4">پایان شیفت</h2>
-        <div id="result-content" class="my-8"></div>
-        <button onclick="location.reload()" class="w-full bg-slate-700 hover:bg-slate-600 py-3 rounded-xl">شروع مجدد</button>
-        <p class="text-[10px] mt-6 opacity-30">BighamLab Architecture</p>
+    <div id="screen-result" class="hidden w-full max-w-sm glass-card rounded-3xl p-8 text-center relative z-10">
+
+        <div class="flex justify-center mb-4">
+            <img src="data:image/png;base64,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" alt="BighamLab" class="w-14 h-14 rounded-xl opacity-80">
+        </div>
+
+        <h2 class="text-2xl font-bold mb-4" style="color:#86efac;">پایان شیفت</h2>
+        <div id="result-content" class="my-6"></div>
+
+        <button onclick="location.reload()"
+                class="w-full py-3 rounded-xl mb-4 transition-all active:scale-95"
+                style="background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.25); color:#86efac;">
+            شروع مجدد
+        </button>
+        <div class="flex justify-center">
+            <a href="https://reymit.ir/bighamlab" target="_blank" class="support-btn">
+                <span class="btn-icon">☕</span>
+                <span>حمایت از BighamLab</span>
+            </a>
+        </div>
+        <p class="text-[10px] mt-5" style="color:rgba(134,239,172,0.2);">BighamLab Architecture</p>
     </div>
 
+    <!--
+        ┌──────────────────────────────────────────────┐
+        │  Load your database BEFORE this script tag   │
+        │  e.g.: <script src="prescriptions.js"></script> │
+        └──────────────────────────────────────────────┘
+    -->
     <script>
+        // ─────────────────────────────────────────────────
+        // NORMALIZER — handles all 3 schema variants:
+        //   Type A: { dr, spec, patient, items:[{name,instruction}], isValid, error, teachingPoint }
+        //   Type B: { dr, spec, items:[string], isValid, explanation }
+        //   Type C: { drugs:[string], is_valid, note }  /  { items:[string], valid, scientific_note }
+        // ─────────────────────────────────────────────────
+        function normalizeCase(raw) {
+            const isValid =
+                raw.isValid    !== undefined ? raw.isValid :
+                raw.valid      !== undefined ? raw.valid :
+                raw.is_valid   !== undefined ? raw.is_valid : true;
+
+            const errorNote =
+                raw.error           ||
+                raw.explanation     ||
+                raw.teachingPoint   ||
+                raw.scientific_note ||
+                raw.note            || null;
+
+            const src = Array.isArray(raw.items) ? raw.items : Array.isArray(raw.drugs) ? raw.drugs : [];
+            const itemList = src.map(i =>
+                typeof i === 'string' ? i : (i.name + (i.instruction ? ` — ${i.instruction}` : ''))
+            );
+
+            return {
+                dr:      raw.dr   || 'پزشک معالج',
+                spec:    raw.spec || raw.specialty || '',
+                patient: raw.patient || raw.patientInfo || '',
+                items:   itemList,
+                isValid: Boolean(isValid),
+                error:   errorNote
+            };
+        }
+
+        // ─────────────────────────────────────────────────
         const CONFIG = { TOTAL_ROUNDS: 10, INITIAL_TIME: 360, PENALTY: 15, SWIPE_THRESHOLD: 80 };
+
         const Game = {
             state: { playerName: '', currentRound: 0, timeRemaining: CONFIG.INITIAL_TIME, score: 0, database: [] },
-            
-            async start() {
-                this.state.playerName = document.getElementById('player-name').value || 'همکار گرامی';
-                // Load DB: Prefer external, fallback to internal
-                this.state.database = (typeof window.PRESCRIPTION_DB !== 'undefined') ? window.PRESCRIPTION_DB : [
-                    {dr:"دکتر آگاه", spec:"داخلی", patient:"بیمار ۴۵ ساله", items:["Tab Losartan", "Tab Spironolactone"], isValid:false, error: "ریسک هایپرکالمی"},
-                    {dr:"دکتر نمونه", spec:"عمومی", patient:"بیمار ۳۰ ساله", items:["Tab Acetaminophen", "Syr Diphenhydramine"], isValid:true, error: ""}
-                ];
+
+            start() {
+                this.state.playerName  = document.getElementById('player-name').value || 'همکار گرامی';
+                this.state.score       = 0;
+                this.state.currentRound= 0;
+                this.state.timeRemaining = CONFIG.INITIAL_TIME;
+
+                const rawDB =
+                    (typeof window.PRESCRIPTIONS   !== 'undefined' ? window.PRESCRIPTIONS   : null) ||
+                    (typeof window.PRESCRIPTION_DB !== 'undefined' ? window.PRESCRIPTION_DB : null) ||
+                    [
+                        { dr:"دکتر آگاه",  spec:"داخلی",  patient:"بیمار ۴۵ ساله", items:[{name:"Tab Losartan 50mg"},{name:"Tab Spironolactone 25mg"}], isValid:false, error:"ریسک هایپرکالمی" },
+                        { dr:"دکتر نمونه", spec:"عمومی",  patient:"بیمار ۳۰ ساله", items:[{name:"Tab Acetaminophen 500mg"},{name:"Tab Cetirizine 10mg"}], isValid:true, error:null }
+                    ];
+
+                this.state.database = rawDB.map(normalizeCase);
                 this.shuffleDB();
+
                 document.getElementById('screen-start').classList.add('hidden');
                 document.getElementById('screen-play').classList.remove('hidden');
                 this.startTimer();
@@ -66,21 +279,27 @@
             },
 
             shuffleDB() {
-                for (let i = this.state.database.length - 1; i > 0; i--) {
+                const db = this.state.database;
+                for (let i = db.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
-                    [this.state.database[i], this.state.database[j]] = [this.state.database[j], this.state.database[i]];
+                    [db[i], db[j]] = [db[j], db[i]];
                 }
             },
 
             startTimer() {
-                const start = Date.now();
+                let lastTick = Date.now();
                 this.timerInterval = setInterval(() => {
-                    const remaining = Math.max(0, CONFIG.INITIAL_TIME - Math.floor((Date.now() - start)/1000));
-                    this.state.timeRemaining = remaining;
-                    const mins = Math.floor(remaining / 60).toString().padStart(2, '0');
-                    const secs = (remaining % 60).toString().padStart(2, '0');
+                    const now   = Date.now();
+                    const delta = Math.floor((now - lastTick) / 1000);
+                    if (delta >= 1) {
+                        this.state.timeRemaining = Math.max(0, this.state.timeRemaining - delta);
+                        lastTick = now;
+                    }
+                    const r    = this.state.timeRemaining;
+                    const mins = Math.floor(r / 60).toString().padStart(2,'0');
+                    const secs = (r % 60).toString().padStart(2,'0');
                     document.getElementById('timer').innerText = `${mins}:${secs}`;
-                    if (remaining <= 0) this.endGame("زمان تموم شد دکتر!");
+                    if (r <= 0) this.endGame("زمان تموم شد دکتر!");
                 }, 100);
             },
 
@@ -88,54 +307,96 @@
                 if (this.state.currentRound >= CONFIG.TOTAL_ROUNDS) return this.endGame("شیفت تموم شد!");
                 const data = this.state.database[this.state.currentRound % this.state.database.length];
                 document.getElementById('round-count').innerText = `${this.state.currentRound + 1}/${CONFIG.TOTAL_ROUNDS}`;
+
                 const card = document.createElement('div');
-                card.className = 'prescription-paper w-[300px] h-[350px] p-6 absolute cursor-grab select-none';
-                card.innerHTML = `<div class="border-b border-gray-300 pb-2 mb-4"><h3 class="font-bold">${data.dr}</h3><p class="text-xs opacity-70">${data.spec}</p></div><p class="text-sm font-bold mb-4">${data.patient}</p><ul class="space-y-2">${data.items.map(i => `<li class="font-mono text-lg">◦ ${i}</li>`).join('')}</ul><div class="absolute bottom-4 left-4 text-[10px] opacity-30">BighamLab Edition</div>`;
-                this.initSwipe(card, data.isValid);
+                card.className = 'prescription-paper w-[300px] h-[350px] p-6 absolute cursor-grab select-none overflow-hidden';
+
+                const itemsHTML = data.items.slice(0, 5)
+                    .map(i => `<li style="font-family:monospace;" class="text-sm leading-snug mb-1">◦ ${i}</li>`)
+                    .join('');
+
+                card.innerHTML = `
+                    <div style="border-bottom:1px solid #d1fae5; padding-bottom:10px; margin-bottom:12px;">
+                        <h3 style="font-weight:700; font-size:1rem; color:#0d4a1a;">${data.dr}</h3>
+                        ${data.spec ? `<p style="font-size:0.75rem; color:#4b7a54;">${data.spec}</p>` : ''}
+                    </div>
+                    ${data.patient ? `<p style="font-size:0.82rem; font-weight:600; color:#1a4a22; margin-bottom:10px; line-height:1.4;">${data.patient}</p>` : ''}
+                    <ul style="list-style:none; margin-bottom:12px;">${itemsHTML}</ul>
+                    <div class="rx-watermark">Rx</div>
+                    <div style="position:absolute; bottom:10px; left:12px; font-size:9px; color:rgba(34,197,94,0.3);">BighamLab Edition</div>
+                `;
+
+                this.initSwipe(card, data.isValid, data.error);
                 const container = document.getElementById('card-container');
-                container.innerHTML = ''; container.appendChild(card);
+                container.innerHTML = '';
+                container.appendChild(card);
             },
 
-            initSwipe(el, isValid) {
-                let startX, currentX;
+            initSwipe(el, isValid, errorMsg) {
+                let startX = 0, currentX = 0;
+
                 const move = (e) => {
-                    currentX = (e.pageX || e.touches[0].pageX) - startX;
+                    const px = e.pageX ?? e.touches?.[0]?.pageX ?? startX;
+                    currentX = px - startX;
                     el.style.transform = `translateX(${currentX}px) rotate(${currentX/15}deg)`;
-                    el.className = `prescription-paper w-[300px] h-[350px] p-6 absolute ${currentX > 20 ? 'swipe-correct' : currentX < -20 ? 'swipe-wrong' : ''}`;
+                    el.className = `prescription-paper w-[300px] h-[350px] p-6 absolute overflow-hidden ${
+                        currentX > 20 ? 'swipe-correct' : currentX < -20 ? 'swipe-wrong' : ''
+                    }`;
                 };
+
                 const end = () => {
                     document.removeEventListener('pointermove', move);
                     if (Math.abs(currentX) > CONFIG.SWIPE_THRESHOLD) {
-                        const isCorrect = (currentX > 0) === isValid;
-                        this.processAnswer(isCorrect);
-                    } else { el.style.transform = 'translateX(0) rotate(0)'; el.className = 'prescription-paper w-[300px] h-[350px] p-6 absolute'; }
+                        this.processAnswer((currentX > 0) === isValid, errorMsg);
+                    } else {
+                        el.style.transform = 'translateX(0) rotate(0)';
+                        el.className = 'prescription-paper w-[300px] h-[350px] p-6 absolute overflow-hidden';
+                    }
                 };
-                el.addEventListener('pointerdown', (e) => { startX = e.pageX || e.touches[0].pageX; document.addEventListener('pointermove', move); document.addEventListener('pointerup', end, {once:true}); });
+
+                el.addEventListener('pointerdown', (e) => {
+                    startX  = e.pageX ?? e.touches?.[0]?.pageX ?? 0;
+                    currentX = 0;
+                    document.addEventListener('pointermove', move);
+                    document.addEventListener('pointerup', end, {once:true});
+                });
             },
 
-            processAnswer(isCorrect) {
+            processAnswer(isCorrect, errorMsg) {
                 const feedbackEl = document.getElementById('feedback-text');
                 if (isCorrect) {
                     this.state.score++;
-                    feedbackEl.innerText = ["عالی دکتر!", "دقیقه!", "صحیح!"].sort(()=>0.5-Math.random())[0];
-                    feedbackEl.style.color = "#22c55e";
+                    feedbackEl.innerText = ["عالی دکتر!", "دقیقاً!", "صحیح!"][Math.floor(Math.random()*3)];
+                    feedbackEl.style.color = '#4ade80';
                 } else {
-                    this.state.timeRemaining -= CONFIG.PENALTY;
-                    feedbackEl.innerText = ["خطرناکه دکتر!", "تداخل!", "اشتباه!"].sort(()=>0.5-Math.random())[0];
-                    feedbackEl.style.color = "#ef4444";
+                    this.state.timeRemaining = Math.max(0, this.state.timeRemaining - CONFIG.PENALTY);
+                    const hint = errorMsg
+                        ? errorMsg.substring(0,45) + (errorMsg.length > 45 ? '…' : '')
+                        : ["خطرناکه دکتر!", "تداخل!", "اشتباه!"][Math.floor(Math.random()*3)];
+                    feedbackEl.innerText = hint;
+                    feedbackEl.style.color = '#f87171';
                 }
                 this.state.currentRound++;
-                this.renderCard();
+                setTimeout(() => this.renderCard(), 150);
             },
 
             endGame(msg) {
                 clearInterval(this.timerInterval);
                 document.getElementById('screen-play').classList.add('hidden');
                 document.getElementById('screen-result').classList.remove('hidden');
-                document.getElementById('result-content').innerHTML = `<p>${msg}</p><div class="text-6xl font-black my-6">${this.state.score}/10</div><p>${this.state.score > 7 ? 'استاد داروساز!' : 'نیاز به مطالعه بیشتر.'}</p>`;
+                const s = this.state.score;
+                const verdict =
+                    s >= 9 ? '🏆 استاد داروساز!' :
+                    s >= 7 ? '👍 عالی بود!' :
+                    s >= 5 ? '📖 نیاز به مرور داری.' :
+                             '⚠️ مطالعه بیشتر لازمه.';
+                document.getElementById('result-content').innerHTML = `
+                    <p style="color:rgba(134,239,172,0.6); margin-bottom:8px;">${msg}</p>
+                    <div class="text-6xl font-black my-4 score-big">${s}/${CONFIG.TOTAL_ROUNDS}</div>
+                    <p style="font-size:1.1rem; color:#86efac;">${verdict}</p>
+                `;
             }
         };
     </script>
 </body>
 </html>
-
